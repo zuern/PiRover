@@ -10,25 +10,28 @@ import navigationSystem
 
 def main():
     try:
-        cameraStream.initialize()
-        controlStream.initialize()
-        navigationSystem.initialize()
+        cameraStr  = cameraStream.CameraStream()
+        controlStr = controlStream.ControlStream()
+        nav = navigationSystem.NavigationSystem()
+        
+        cameraStr.initialize()
+        controlStr.initialize()
+        nav.initialize()
 
         # Start the navigation system up
-        thread.start_new_thread(navigationSystem.start, ())
+        thread.start_new_thread(nav.start, ())
         # Start sending images to the server for processing
-        thread.start_new_thread(cameraStream.startSending, ())
+        thread.start_new_thread(cameraStr.startSending, ())
         while (True):
             # Wait for the server to respond
-            serverResponse = controlStream.getServerResponse()
+            serverResponse = controlStr.getServerResponse()
             # Send the response to the navigation system to handle
-            thread.start_new_thread(navigationSystem.handleResponse, (serverResponse))
+            thread.start_new_thread(nav.handleResponse, (serverResponse))
 
     except KeyboardInterrupt:
-        cameraStream.cleanup()
-        controlStream.cleanup()
-        cameraCapture.cleanup()
-        navigationSystem.cleanup()
+        cameraStr.cleanup()
+        controlStr.cleanup()
+        nav.cleanup()
 
 if (__name__ == "__main__"):
     main()
