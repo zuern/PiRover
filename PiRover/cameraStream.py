@@ -20,7 +20,7 @@ class CameraStream:
         self.connection = self.socket.makefile('wb')
         self.initialized = True
 
-    def start_sending(self, delayPerImageInMilliseconds):
+    def start_sending(self):#, delayPerImageInMilliseconds):
         if (self.initialized == False):
             print("Camera Stream was not initialized before startSending was called!")
             return
@@ -52,7 +52,7 @@ class CameraStream:
                 if (self.stopSending):
                     break;
 
-                time.sleep(delayPerImageInMilliseconds / 1000)
+                time.sleep(0.01)#delayPerImageInMilliseconds / 1000)
 
                 # Reset the stream for the next capture
                 stream.seek(0)

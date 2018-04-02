@@ -18,6 +18,7 @@ def main():
         controlStr = controlStream.ControlStream()
         #nav = navigationSystem.NavigationSystem()
         
+        controlStr.initialize(CONTROLPORT)
         cameraStr.initialize(SERVER_IP, CAMERAPORT)
         #nav.initialize()
 
@@ -25,13 +26,12 @@ def main():
         #thread.start_new_thread(nav.start, ())
         # Start sending images to the server for processing
         thread.start_new_thread(cameraStr.start_sending, ())
-        controlStr.initialize(CONTROLPORT)
-        return
+        #cameraStr.start_sending(1000)
         while (True):
             # Wait for the server to respond
-            serverResponse = controlStr.getServerResponse()
+            serverResponse = controlStr.get_server_response()
             # Send the response to the navigation system to handle
-            thread.start_new_thread(nav.handleResponse, (serverResponse))
+            #thread.start_new_thread(nav.handleResponse, (serverResponse))
 
     except KeyboardInterrupt:
         cameraStr.cleanup()
