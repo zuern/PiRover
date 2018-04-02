@@ -4,16 +4,16 @@ import socket
 import struct
 from PIL import Image
 
-LISTENPORT  = 8000
+CAMERAPORT  = 8000
 CONTROLPORT = 8001
-ROVER_IP    = "192.168.0.2"
+ROVER_IP    = "192.168.0.32"
 
 # Start a socket listening for connections on all interfaces
 # Listens to receive images from the rover
 server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', LISTENPORT))
+server_socket.bind(('0.0.0.0', CAMERAPORT))
 server_socket.listen(0)
-print("Server listening on port {}".format(LISTENPORT))
+print("Server listening on port {}".format(CAMERAPORT))
 
 # Accept a single connection and make a file-like object out of it
 image_connection = server_socket.accept()[0].makefile('rb')

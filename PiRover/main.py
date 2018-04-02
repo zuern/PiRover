@@ -19,13 +19,13 @@ def main():
         #nav = navigationSystem.NavigationSystem()
         
         cameraStr.initialize(SERVER_IP, CAMERAPORT)
-        controlStr.initialize(CONTROLPORT)
         #nav.initialize()
 
         # Start the navigation system up
         #thread.start_new_thread(nav.start, ())
         # Start sending images to the server for processing
         thread.start_new_thread(cameraStr.start_sending, ())
+        controlStr.initialize(CONTROLPORT)
         return
         while (True):
             # Wait for the server to respond
