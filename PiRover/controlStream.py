@@ -3,13 +3,12 @@
 import io
 import socket
 import struct
-from PIL import Image
 
 '''
 This class is responsible for listening to and parsing responses from the server
 '''
 class ControlStream:
-    def initialize(port):
+    def initialize(self, port):
         self.socket = socket.socket()
         self.socket.bind(('0.0.0.0',port))
         self.socket.listen(0)

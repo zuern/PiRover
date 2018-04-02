@@ -12,16 +12,18 @@ def main():
     try:
         cameraStr  = cameraStream.CameraStream()
         controlStr = controlStream.ControlStream()
-        nav = navigationSystem.NavigationSystem()
+        #nav = navigationSystem.NavigationSystem()
         
         cameraStr.initialize()
-        controlStr.initialize()
-        nav.initialize()
+        controlStr.initialize(8001)
+        #nav.initialize()
 
         # Start the navigation system up
-        thread.start_new_thread(nav.start, ())
+        #thread.start_new_thread(nav.start, ())
         # Start sending images to the server for processing
         thread.start_new_thread(cameraStr.startSending, ())
+        thread.start_new_thread(controlStr.startListening, ())
+        return
         while (True):
             # Wait for the server to respond
             serverResponse = controlStr.getServerResponse()
@@ -31,7 +33,7 @@ def main():
     except KeyboardInterrupt:
         cameraStr.cleanup()
         controlStr.cleanup()
-        nav.cleanup()
+        #nav.cleanup()
 
 if (__name__ == "__main__"):
     main()
