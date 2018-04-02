@@ -57,9 +57,6 @@ try:
         # Display the image in a default program on your pc
         #image.show()
 
-	with open('../darkflow/img/out/latest.json') as f:
-		JSON = f.read()
-
 
 finally:
     image_connection.close()
