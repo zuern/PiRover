@@ -13,9 +13,11 @@ LISTENPORT  = 8000
 server_socket = socket.socket()
 server_socket.bind(('0.0.0.0', 8000))
 server_socket.listen(0)
+print("Server listening on port 8000")
 
 # Accept a single connection and make a file-like object out of it
 connection = server_socket.accept()[0].makefile('rb')
+print("Connection established")
 try:
     while True:
         # Read the length of the image as a 32-bit unsigned int. If the
@@ -33,8 +35,13 @@ try:
         image = Image.open(image_stream)
         print('Image is %dx%d' % image.size)
         image.verify()
+        image = Image.open(image_stream)
+        '''
+        TODO: Hook in the CNN here, feeding in image.
+        '''
         print('Image is verified')
-        import.show()
+        image.show()
+        break
 finally:
     connection.close()
     server_socket.close()

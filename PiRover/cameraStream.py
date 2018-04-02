@@ -58,8 +58,10 @@ class CameraStream:
                 stream.seek(0)
                 stream.truncate()
             # Write a length of zero to the stream to signal we're done
+            print("Sending quit signal")
             self.connection.write(struct.pack('<L', 0))
         finally:
+            print("Cleaning up")
             self.cleanup()
     def cleanup(self):
         self.stopSending = True
