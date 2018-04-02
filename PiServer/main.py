@@ -50,13 +50,15 @@ try:
         print('Image is %dx%d' % image.size)
         image.verify()
         image = Image.open(image_stream)
-        '''
-        TODO: Hook in the CNN here, feeding in image.
-        '''
-        print('Image is verified')
+        
+	image.save('../darkflow/img/latest.bmp', format='BMP')
+	
+	print('Image is verified')
         # Display the image in a default program on your pc
         #image.show()
-        sampleJSON = '[{"label":"person", "confidence": 0.56, "topleft": {"x": 184, "y": 101}, "bottomright": {"x": 274, "y": 382}},{"label": "dog", "confidence": 0.32, "topleft": {"x": 71, "y": 263}, "bottomright": {"x": 193, "y": 353}},{"label": "horse", "confidence": 0.76, "topleft": {"x": 412, "y": 109}, "bottomright": {"x": 592,"y": 337}}]'
+
+	with open('../darkflow/img/out/latest.json') as f:
+		JSON = f.read()
 
 
 finally:
