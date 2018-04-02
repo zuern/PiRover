@@ -14,11 +14,12 @@ class ControlStream:
         self.socket.listen(0)
         print("Controller listening for server responses on port {}".format(port))
     def get_server_response(self):
+        print("Awaiting server connection")
         # Accept a single connection and make a file-like object out of it
         self.connection = self.socket.accept()[0].makefile('rb')
         try:
             while True:
-                print("Connected to server stream")
+                self.connection.read(
         finally:
             self.cleanup()
     def cleanup(self):
