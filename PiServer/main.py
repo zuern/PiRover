@@ -19,13 +19,19 @@ print("Server listening on port {}".format(CAMERAPORT))
 image_connection = server_socket.accept()[0].makefile('rb')
 print("Image connection established with rover")
 
-# Now that a connection is established to receive images, create a connection to send tag data
-control_socket = socket.socket()
-print("Connecting control connection to rover")
-control_socket.connect((ROVER_IP, CONTROLPORT))
-control_connection = control_socket.makefile('wb')
-print("Control connection established")
+control_connection = None
 
+try:
+    # Now that a connection is established to receive images, create a connection to send tag data
+    control_socket = socket.socket()
+    print("Connecting control connection to rover")
+    control_socket.connect((ROVER_IP, CONTROLPORT))
+    control_connection = control_socket.makefile('wb')
+    print("Control connection established")
+finally:
+    if (control_connection != None):
+        control_connection.close()
+    control_socket.close()
 try:
     while True:
         # Read the length of the image as a 32-bit unsigned int. If the
