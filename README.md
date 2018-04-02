@@ -16,3 +16,7 @@ This method will output a coarse bounding box, however the implementation is sim
 **Method 2:**
 Our second method will be using the YOLO (You Only Look Once) algorithm for object detection.  This functions by determining the “best” locations for bounding boxes, and then passing these regions to the classifier. This happens with only one pass through the CNN and is highly performant.
 
+## Project Structure
+
+* All scripts to be run on the rover should go in PiRover.
+* All scripts to be run on the server should go in PiServer.
