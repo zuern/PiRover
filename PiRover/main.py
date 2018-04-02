@@ -8,21 +8,24 @@ import controlStream
 # Handles navigation of the Rover
 import navigationSystem
 
+SERVER_IP   = "192.168.0.13"
+CAMERAPORT  = 8000
+CONTROLPORT = 8001
+
 def main():
     try:
         cameraStr  = cameraStream.CameraStream()
         controlStr = controlStream.ControlStream()
         #nav = navigationSystem.NavigationSystem()
         
-        cameraStr.initialize()
-        controlStr.initialize(8001)
+        cameraStr.initialize(SERVER_IP, CAMERAPORT)
+        controlStr.initialize(CONTROLPORT)
         #nav.initialize()
 
         # Start the navigation system up
         #thread.start_new_thread(nav.start, ())
         # Start sending images to the server for processing
-        thread.start_new_thread(cameraStr.startSending, ())
-        thread.start_new_thread(controlStr.startListening, ())
+        thread.start_new_thread(cameraStr.start_sending, ())
         return
         while (True):
             # Wait for the server to respond
