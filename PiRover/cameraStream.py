@@ -18,6 +18,7 @@ class CameraStream:
     def initialize(self, host, port):
         self.socket.connect((host, port))
         self.connection = self.socket.makefile('wb')
+        self.initialized = True
 
     def start_sending(self, delayPerImageInMilliseconds):
         if (self.initialized == False):
