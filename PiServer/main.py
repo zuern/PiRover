@@ -4,9 +4,9 @@ import socket
 import struct
 from PIL import Image
 
-CAMERAPORT  = 8000
+CAMERAPORT  = 8005
 CONTROLPORT = 8001
-ROVER_IP    = "192.168.0.32"
+ROVER_IP    = "192.168.42.1"
 
 # Start a socket listening for connections on all interfaces
 # Listens to receive images from the rover
@@ -19,19 +19,11 @@ print("Server listening on port {}".format(CAMERAPORT))
 image_connection = server_socket.accept()[0].makefile('rb')
 print("Image connection established with rover")
 
-control_connection = None
-
-try:
-    # Now that a connection is established to receive images, create a connection to send tag data
-    control_socket = socket.socket()
-    print("Connecting control connection to rover")
-    control_socket.connect((ROVER_IP, CONTROLPORT))
-    control_connection = control_socket.makefile('wb')
-    print("Control connection established")
-finally:
-    if (control_connection != None):
-        control_connection.close()
-    control_socket.close()
+# Now that a connection is established to receive images, create a connection to send tag data
+control_socket = socket.socket()
+control_socket.connect((ROVER_IP, CONTROLPORT))
+control_connection = control_socket.makefile('wb')
+print("Control connection established with rover")
 try:
     while True:
         # Read the length of the image as a 32-bit unsigned int. If the
@@ -50,14 +42,26 @@ try:
         print('Image is %dx%d' % image.size)
         image.verify()
         image = Image.open(image_stream)
-        
-	image.save('../darkflow/img/latest.bmp', format='BMP')
-	
 	print('Image is verified')
-        # Display the image in a default program on your pc
-        #image.show()
+        
+        print("Saving img to darkflow img folder")
+	image.save('../darkflow/img/latest.jpg', format='jpeg')
+        print("Waiting for darkflow to process image")
+        thread.sleep(1)
+        print("Sending json back to rover")
 
+        jsonBytes = open("../darkflow/img/out/latest.json", 'rb')
+        jsonData = jsonBytes.read()
+        size = len(jsonData)
+        jsonBytes.close()
+
+        control_socket.send(jsonData)
+
+
+        break
 
 finally:
     image_connection.close()
+    control_connection.close()
+    control_socket.close()
     server_socket.close()
