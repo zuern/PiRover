@@ -14,27 +14,24 @@ CONTROLPORT = 8001
 
 def main():
     try:
-        cameraStr  = cameraStream.CameraStream()
+        cameraStr  = cameraStream.CameraStream(SERVER_IP, CAMERAPORT)
         controlStr = controlStream.ControlStream()
         #nav = navigationSystem.NavigationSystem()
         
         controlStr.initialize(CONTROLPORT)
-        cameraStr.initialize(SERVER_IP, CAMERAPORT)
         #nav.initialize()
 
         # Start the navigation system up
         #thread.start_new_thread(nav.start, ())
+        
+        serverResponse = controlStr.startListening()
         # Start sending images to the server for processing
-        thread.start_new_thread(cameraStr.start_sending, ())
-        #cameraStr.start_sending(1000)
-        while (True):
-            # Wait for the server to respond
-            serverResponse = controlStr.get_server_response()
-            # Send the response to the navigation system to handle
+        cameraStr.start_sending(50) # FPS
+        
+        # Send the response to the navigation system to handle
             #thread.start_new_thread(nav.handleResponse, (serverResponse))
 
     except KeyboardInterrupt:
-        cameraStr.cleanup()
         controlStr.cleanup()
         #nav.cleanup()
 
