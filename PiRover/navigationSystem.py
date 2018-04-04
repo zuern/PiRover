@@ -18,11 +18,11 @@ class NavigationSystem:
         self.speed = 70
 
         # These are the GPIO pins that the motor logic leads are connected to
-        # see https://pinout.xyz/ for pinout information
-        motor1A = 3
-        motor1B = 5
-        motor2A = 8
-        motor2B = 10
+        # see https://www.raspberrypi.org/documentation/usage/gpio/images/a-and-b-gpio-numbers.png for pinout information
+        motor1A = 2
+        motor1B = 3
+        motor2A = 4
+        motor2B = 17
 
         gpio.setmode(gpio.BOARD)
         gpio.setwarnings(False)
