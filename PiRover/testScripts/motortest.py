@@ -19,11 +19,11 @@ speed = 70
 # These are the GPIO pins that the motor logic leads are connected to
 # see https://pinout.xyz/ for pinout information
 motor1A = 3
-motor1B = 5
-motor2A = 8
-motor2B = 10
+motor1B = 2
+motor2A = 4
+motor2B = 17
 
-gpio.setmode(gpio.BOARD)
+gpio.setmode(gpio.BCM)
 gpio.setwarnings(False)
 
 gpio.setup(motor1A, gpio.OUT)
@@ -52,6 +52,11 @@ def driveLeft():
     updateDriving([0, speed, speed, 0])
 def driveRight():
     updateDriving([speed, 0, 0, speed])
+
+
+print("Controls:")
+print("ESC\tExit")
+print("WASD: Forward Left Right Back")
 
 # Control the motors from the keyboard via WASD keys
 try:
