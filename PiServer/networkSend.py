@@ -22,7 +22,10 @@ class FileReciever(threading.Thread):
             self.connection = self.gateway.accept()[0].makefile('rb')
             recievedFileNum = 0
             while True:
-                file_len = struct.unpack('<L', self.connection.read(struct.calcsize('<L')))[0]
+                try:
+                    file_len = struct.unpack('<L', self.connection.read(struct.calcsize('<L')))[0]
+                except:
+                    break
                 
                 # End recieving when other end sends length of 0
                 if not file_len:
