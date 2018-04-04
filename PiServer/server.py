@@ -45,20 +45,31 @@ def processImageCallbackFunction(recievedImage, imgNumber):
 
 # This gets called once the image reciever has finished recieving images
 def cleanupCallbackFn():
+    print("Hit server cleanup")
     global jsonSender
     if (jsonSender != None):
         jsonSender.cleanup()
 # end cleanupCallbackFn
 
+
+
+'''
+MAIN CODE BELOW
+'''
 try:
     print("Setting up server and listening for images from PiRover on port {}".format(CAMERAPORT))
     # Set up our image reciever and run it on a new thread
     imageReciever = networkSend.FileReciever(CAMERAPORT, processImageCallbackFunction, cleanupCallbackFn)
     # Run the imageReciever synchronously (blocks the process from exiting)
     imageReciever.run()
-    print("Server process exiting.")
 except KeyboardInterrupt:
     print("Keyboard interrupt detected. Exiting.")
     if (jsonSender != None):
         jsonSender.cleanup()
     imageReciever.cleanup()
+except Exception as e:
+    print("Error. Exiting")
+    print(e)
+    quit()
+
+print("Server process exiting.")

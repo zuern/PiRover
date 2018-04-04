@@ -34,7 +34,7 @@ class FileReciever(threading.Thread):
                 file_stream.write(self.connection.read(file_len))
                 file_stream.seek(0)
 
-#                print("Received file from server")
+                print("Received file from server")
                 self.fileCallbackFn(file_stream, recievedFileNum)
         finally:
             if (self.connection != None):
