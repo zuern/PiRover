@@ -8,7 +8,7 @@ import controlStream
 # Handles navigation of the Rover
 import navigationSystem
 
-SERVER_IP   = "192.168.0.13"
+SERVER_IP   = "192.168.42.11"
 CAMERAPORT  = 8000
 CONTROLPORT = 8001
 
