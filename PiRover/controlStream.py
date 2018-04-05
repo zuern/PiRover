@@ -12,18 +12,20 @@ This class is responsible for listening to and parsing responses from the server
 class ControlStream:
     def fileRecievedCallback(self, fileStream, ignored):
         try:
-            print("Recieved JSON from server\n")
+            #print("Recieved JSON from server\n")
             time.sleep(1)
             data = json.load(fileStream)
 
             if (len(data) == 0): # nothing detected
                 print("-->Nothing detected. Ambling around")
-                self.nav.amble()
+                self.nav.amble(0.1)
             else:
                 print("-->object detected!")
+                if (data[0]['label'] == "car"):
+                    print("It's a CAR!!!")
                 angleToObject = self.computeAngle(data[0], self.cameraStream.w ,self.cameraStream.h)
-                if math.degrees(abs(angleToObject)) < 20:
-                    print("-->Angle to obj: {}".format(math.degrees(angleToObject)))
+                print("-->Angle to obj: {}".format(math.degrees(angleToObject)))
+                if math.degrees(abs(angleToObject)) < 30:
                     self.nav.drive_forwards(0.5)
                 else:
                     print("-->Turning to face object")
