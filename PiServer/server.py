@@ -60,6 +60,10 @@ def cleanupCallbackFn():
 MAIN CODE BELOW
 '''
 try:
+    # Remove leftover json from last time
+    if (os.path.isfile('../darkflow/img/out/latest.json')):
+        os.remove('../darkflow/img/latest.jpg')
+        os.remove('../darkflow/img/out/latest.json')
     print("Setting up server and listening for images from PiRover on port {}".format(CAMERAPORT))
     # Set up our image reciever and run it on a new thread
     imageReciever = networkSend.FileReciever(CAMERAPORT, processImageCallbackFunction, cleanupCallbackFn)
