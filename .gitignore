@@ -1,1 +1,3 @@
 PiRover/image*.jpg
+*.pyc
+*/**__pycache__
