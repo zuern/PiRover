@@ -1,9 +1,10 @@
-#!/bin/python
-import io
-import socket
-import struct
-import networkSend
+#!/bin/python3
+from sys import argv
+import numpy as np
 from PIL import Image
+import json
+from darkflow.cli import cliHandler
+import networkSend
 
 CAMERAPORT  = 8000
 CONTROLPORT = 8001
@@ -20,21 +21,19 @@ If you want to stop this program, kill the process on the Pi first.
 jsonSender = None
 
 # This gets called every time we recieve a new image
-def processImageCallbackFunction(recievedImage, imgNumber):
+def processImageCallbackFunction(recievedImage, imgNumber, network):
     global jsonSender
     if (jsonSender is None): 
-        jsonSender = networkSend.FileSender(ROVER_IP, CONTROLPORT)
+        jsonSender = networkSend.StringSender(ROVER_IP, CONTROLPORT)
     try:
-        image = Image.open(recievedImage)
+        # Import received image as numpy array
+        image = np.array(Image.open(recievedImage))
         
-        #print("Saving img to darkflow img folder")
-        # TESTING: image.save("../darkflow/img/latest.png")
+        # Predict bounding box info (yields dict in standard format)
+        prediction = network.return_predict(image)
 
-        # Save the image sent from the Pi to the darkflow input folder, with an added image number
-        image.save("../darkflow/img/img{}.jpg".format(imgNumber), format='jpeg')
-        
         #print("Sending json back to rover")
-        jsonSender.sendFile('../darkflow/img/out/latest.json')
+        jsonSender.sendString(json.dumps(prediction))
     except BrokenPipeError:
         print("The connection to the pi was broken. Exiting program")
         quit()
@@ -57,11 +56,15 @@ def cleanupCallbackFn():
 MAIN CODE BELOW
 '''
 try:
+    # Set up neural network with desired weights
+    network = cliHandler(argv)
+
     print("Setting up server and listening for images from PiRover on port {}".format(CAMERAPORT))
     # Set up our image reciever and run it on a new thread
     imageReciever = networkSend.FileReciever(CAMERAPORT, processImageCallbackFunction, cleanupCallbackFn)
     # Run the imageReciever synchronously (blocks the process from exiting)
     imageReciever.run()
+
 except KeyboardInterrupt:
     print("Keyboard interrupt detected. Exiting.")
     if (jsonSender != None):

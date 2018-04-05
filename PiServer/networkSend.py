@@ -2,6 +2,7 @@ import socket
 import struct
 import io
 import threading
+from sys import getsizeof as size
 
 '''
 Listen for incoming files from FileSender.
@@ -46,9 +47,9 @@ class FileReciever(threading.Thread):
             self.cleanupCallbackFn()
 
 '''
-Send a file over the network.
+Generic stuff sender, for inheritance
 '''
-class FileSender:
+class Sender:
     '''
     Host: The String IP address to send to
     Port: The int port to send to
@@ -57,8 +58,21 @@ class FileSender:
         self.gateway = socket.socket()
         self.gateway.connect((host, port))
         self.connection = self.gateway.makefile('wb')
-#        print("Connection to recipient established")
     
+    '''
+    Clean up after you're done sending files
+    '''
+    def cleanup(self):
+        self.connection.flush()
+        self.connection.write(struct.pack('<L', 0))
+        self.connection.flush()
+        self.connection.close()
+        self.gateway.close()
+
+'''
+Send a file over the network.
+'''
+class FileSender(Sender):
     '''
     Send a file
     filePath: String location of the file on disk
@@ -72,15 +86,21 @@ class FileSender:
         self.connection.flush()
         self.connection.write(data)
         self.connection.flush()
-#        print("Sent file {} to client".format(filePath))
     
+
+'''
+Send a string over the network.
+'''
+class StringSender(Sender):
     '''
-    Clean up after you're done sending files
+    Send a string
+    filePath: utf-8 encoded string
     '''
-    def cleanup(self):
-        # Tell the other end there's nothing else coming
+    def sendString(self, string):
+        data = string.encode() 
+        length = len(data) 
+
+        self.connection.write(struct.pack('<L', length))
         self.connection.flush()
-        self.connection.write(struct.pack('<L', 0))
+        self.connection.write(data)
         self.connection.flush()
-        self.connection.close()
-        self.gateway.close()
