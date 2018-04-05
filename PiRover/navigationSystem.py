@@ -18,14 +18,14 @@ class NavigationSystem:
         self.freq  = 50 # Hz
         self.speed = 70
 
-        # These are the GPIO pins that the motor logic leads are connected to
-        # see https://pinout.xyz/ for pinout information
-        motor1A = 3
-        motor1B = 5
-        motor2A = 8
-        motor2B = 10
 
-        gpio.setmode(gpio.BOARD)
+        # These are the GPIO pins that the motor logic leads are connected to
+        # see https://www.raspberrypi.org/documentation/usage/gpio/images/a-and-b-gpio-numbers.png for pinout information
+        motor1A = 3
+        motor1B = 2
+        motor2A = 4
+        motor2B = 17 
+        gpio.setmode(gpio.BCM)
         gpio.setwarnings(False)
 
         gpio.setup(motor1A, gpio.OUT)
@@ -42,53 +42,52 @@ class NavigationSystem:
 
         for pwm in self.pwms:
             pwm.start(0)
-
-        self.start()
+        print("Navigation system initialized.")
     # end __init__
 
     '''
     Makes the rover move aimlessly around the terrain until self.ambleAround is set to False
     '''
-    def start(self):
+    def amble(self):
         # Possible actions that can be taken
-        actions = [self.drive_forwards, self.drive_backwards, self.drive_left, self.drive_right]
-        while True:
-            # Pick an action to do
-            nextAction = randint(0,4)
-            # Pick how long to do it in milliseconds
-            duration = randint(1, 2000)
-            timeElapsed = 0
-            while timeElapsed < duration and self.ambleAround is True:
-                # Execute the chosen action
-                actions[nextAction]()
-                # Wait 10 ms before checking in again
-                time.sleep(0.01)
-                timeElapsed += 10
-            
+        actions = [self.drive_forwards, self.drive_left, self.drive_right]
+        # Pick an action to do
+        nextAction = randint(0,len(actions))
+        # Execute the chosen action
+        actions[nextAction]()
+        # Wait before stopping 
+        time.sleep(0.2)
+        self.stop()
 
     def __updateDriving(self, speeds):
         for i in range(4):
             self.pwms[i].ChangeDutyCycle(speeds[i])
-    
+   
     # Turn the robot an angle of theta radians from it's front facing position.
     # Positive theta values will turn right, negative left
     # Theta should be < 90 degrees
     # This will only be approximate since we're using DC motors and not stepper motors to control the rover
     def turn(self, theta):
         self.stop()
+
+        turnLeft = False
+        if theta < 0:
+            turnLeft = True
+            theta *= -1
+
         time.sleep(0.1) # Give motors a sec to wind down
         # We need to calculate how long the motor should run to make it travel the correct distance to turn the rover
         # The following values were measured, and are approximate
         c       = 6 *  math.pi  # Circumference of the wheels in cm
         track   = 10.4          # Tire-to-Tire width in cm
         RPS     = 2.208         # Tire revolutions per second (approximate)
-        timeToSleep = (c * track * math.sin(theta) ) / RPS
+        timeToSleep = (track * math.sin(theta) ) / ( RPS * c ) * 2 # 2 is a fudge-factor
         print("TTS: {}".format(timeToSleep))
-        if theta > 0:
+        if turnLeft == False:
             # Turning right, so use the left motor only, going forwards
-            self.__updateDriving([0, 0, 0, self.speed])
+            self.__updateDriving([1, 0, 0, self.speed])
         else:
-            self.__updateDriving([0, self.speed, 0, 0])
+            self.__updateDriving([0, self.speed, 1, 0])
         time.sleep(timeToSleep)
         self.stop()
 

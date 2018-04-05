@@ -21,7 +21,8 @@ class FileReciever(threading.Thread):
 #            print("Listening on port {}".format(self.port))
             self.connection = self.gateway.accept()[0].makefile('rb')
             recievedFileNum = 0
-            while True:
+            shouldWeStop = False
+            while shouldWeStop != True:
                 try:
                     file_len = struct.unpack('<L', self.connection.read(struct.calcsize('<L')))[0]
                 except:
@@ -38,7 +39,7 @@ class FileReciever(threading.Thread):
                 file_stream.seek(0)
 
                 print("Received file from server")
-                self.fileCallbackFn(file_stream, recievedFileNum)
+                shouldWeStop = self.fileCallbackFn(file_stream, recievedFileNum)
         finally:
             if (self.connection != None):
                 self.connection.close()
