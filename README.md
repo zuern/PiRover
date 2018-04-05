@@ -19,6 +19,8 @@ The `PiRover` software consists of three modules and main.py:
 ## `PiServer`
 `PiServer` interfaces with the `PiRover` over a LAN, forwarding images to either of two CNN models, `tiny-yolo` and `SENURA-CNN`. Each model processes image data asynchronously, and yields JSON indicating the bounding boxes for the scene (if any).
 
+Currently `server.py` and `networkSend.py` need to be linked into the `darkflow` directory and run from there in order for yolo to work
+
 ## `SENURA-CNN`
 Divide the image into an NxN grid. Pass an image classifier trained on the target object over each grid square. The square with highest activation is designated to contain the target object.
 This method will output a coarse bounding box, however the implementation is simple. This method can be optimized by manipulating values of N to find the best grid square-size.

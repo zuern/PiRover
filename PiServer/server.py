@@ -19,20 +19,24 @@ If you want to stop this program, kill the process on the Pi first.
 '''
 
 jsonSender = None
+network = None
+
 
 # This gets called every time we recieve a new image
-def processImageCallbackFunction(recievedImage, imgNumber, network):
+def processImageCallbackFunction(recievedImage, imgNumber):
     global jsonSender
+    global network
     if (jsonSender is None): 
         jsonSender = networkSend.StringSender(ROVER_IP, CONTROLPORT)
     try:
         # Import received image as numpy array
         image = np.array(Image.open(recievedImage))
         
+        print("Generating prediction...")
         # Predict bounding box info (yields dict in standard format)
         prediction = network.return_predict(image)
-
-        #print("Sending json back to rover")
+	
+        print("Sending JSON back to rover")
         jsonSender.sendString(json.dumps(prediction))
     except BrokenPipeError:
         print("The connection to the pi was broken. Exiting program")
