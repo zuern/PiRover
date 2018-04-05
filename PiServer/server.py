@@ -1,13 +1,12 @@
 #!/bin/python
-import io
-import socket
-import struct
+import os
+import time
 import networkSend
 from PIL import Image
 
 CAMERAPORT  = 8000
 CONTROLPORT = 8001
-ROVER_IP    = "192.168.0.32" #"192.168.42.1"
+ROVER_IP    = "192.168.42.1" #"192.168.42.1"
 #ROVER_IP = "0.0.0.0"
 
 '''
@@ -27,19 +26,23 @@ def processImageCallbackFunction(recievedImage, imgNumber):
     try:
         image = Image.open(recievedImage)
         
-        #print("Saving img to darkflow img folder")
-        # TESTING: image.save("../darkflow/img/latest.png")
-
-        # Save the image sent from the Pi to the darkflow input folder, with an added image number
-        image.save("../darkflow/img/img{}.jpg".format(imgNumber), format='jpeg')
+        print("Saving img to darkflow img folder")
+        image.save("../darkflow/img/latest.jpg", format='jpeg')
         
-        #print("Sending json back to rover")
-        jsonSender.sendFile('../darkflow/img/out/latest.json')
-    except BrokenPipeError:
+        print("Sending json back to rover")
+        try:
+            filePath = '../darkflow/img/out/latest.json'.format(imgNumber)
+            while (os.path.isfile(filePath) is False):
+                print("Waiting for darkflow to output json file to disk...")
+                time.sleep(0.1)
+            jsonSender.sendFile(filePath)
+            print("Sent json\n")
+        except Exception as e:
+            print(e)
+            print("Couldn't send the json file. Exiting")
+    except IOError as e:
         print("The connection to the pi was broken. Exiting program")
-        quit()
-    except IOError:
-        print("The connection to the pi was broken. Exiting program")
+        print(e)
         quit()    
 # end processImageCallbackFunction
 
@@ -66,7 +69,6 @@ except KeyboardInterrupt:
     print("Keyboard interrupt detected. Exiting.")
     if (jsonSender != None):
         jsonSender.cleanup()
-    imageReciever.cleanup()
 except Exception as e:
     print("Error. Exiting")
     print(e)

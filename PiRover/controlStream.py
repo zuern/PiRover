@@ -10,6 +10,18 @@ import math
 This class is responsible for listening to and parsing responses from the server
 '''
 class ControlStream:
+    def computeDrivingDirection(boundingBox):
+        print(boundingBox)
+        # Get the dimensions of the image
+        dim = self.imgDimensions.split("x")
+        w = dim[0]
+        h = dim[1]
+
+        # Get the centroid of the bounding box
+        centroid = (box['width'] / 2 + box['x'], box['height'] / 2 + box['y'])
+
+
+
     def fileRecievedCallback(self, fileStream, ignored):
         try:
             print("Recieved JSON from server")

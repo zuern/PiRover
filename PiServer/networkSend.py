@@ -58,7 +58,7 @@ class FileSender:
         self.gateway = socket.socket()
         self.gateway.connect((host, port))
         self.connection = self.gateway.makefile('wb')
-#        print("Connection to recipient established")
+        print("Connection to recipient established")
     
     '''
     Send a file
