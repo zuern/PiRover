@@ -32,9 +32,9 @@ class CameraStream:
 
     def sendImage(self):
         try:
-            print("Capturing")
+            #print("Capturing")
             self.camera.capture('img.jpg', format='jpeg')    
-            print("Sending image")
+            #print("Sending image")
             self.imageSender.sendFile('img.jpg')
             print("Image sent")
         except Exception as e:

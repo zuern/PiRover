@@ -10,34 +10,31 @@ import math
 This class is responsible for listening to and parsing responses from the server
 '''
 class ControlStream:
-    def computeDrivingDirection(boundingBox):
-        print(boundingBox)
-        # Get the dimensions of the image
-        dim = self.imgDimensions.split("x")
-        w = dim[0]
-        h = dim[1]
-
-        # Get the centroid of the bounding box
-        centroid = (box['width'] / 2 + box['x'], box['height'] / 2 + box['y'])
-
-
-
     def fileRecievedCallback(self, fileStream, ignored):
         try:
-            print("Recieved JSON from server")
+            print("Recieved JSON from server\n")
             time.sleep(1)
             data = json.load(fileStream)
 
             if (len(data) == 0): # nothing detected
-                print("Nothing detected")
+                print("-->Nothing detected. Ambling around")
                 self.nav.amble()
             else:
-                print(data)
+                print("-->object detected!")
                 angleToObject = self.computeAngle(data[0], self.cameraStream.w ,self.cameraStream.h)
-                self.nav.turn(angleToObject)
+                if math.degrees(abs(angleToObject)) < 20:
+                    print("-->Angle to obj: {}".format(math.degrees(angleToObject)))
+                    self.nav.drive_forwards(0.5)
+                else:
+                    print("-->Turning to face object")
+                    self.nav.turn(angleToObject)
 
             # Send the next image
             self.cameraStream.sendImage()
+        except KeyboardInterrupt:
+            print("KB intterupt!")
+            nav.cleanup()
+            quit()
         except Exception as e:
             print(e)
             return False

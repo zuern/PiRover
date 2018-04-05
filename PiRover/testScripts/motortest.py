@@ -34,9 +34,10 @@ def keyboardControl():
 # end keyboardControls
 
 if __name__ == "__main__":
-    # turn 45 degrees
-    nav.turn(-0.25 * math.pi)
-#    nav.__updateDriving([0, 0, 0, self.speed])
+    nav.drive_forwards()
+    time.sleep(0.5)
+    print("stopping")
     nav.stop()
+    time.sleep(2)
     nav.cleanup()
-    #keyboardControl()
+#    keyboardControl()

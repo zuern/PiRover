@@ -21,6 +21,7 @@ def main():
         controlStr.initialize(CONTROLPORT, cameraStr, nav)
 
     except KeyboardInterrupt:
+        print("main: keyboard interrupt")
         controlStr.cleanup()
         cameraStr.cleanup()
         nav.cleanup()

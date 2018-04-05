@@ -48,15 +48,15 @@ class NavigationSystem:
     '''
     Makes the rover move aimlessly around the terrain until self.ambleAround is set to False
     '''
-    def amble(self):
+    def amble(self, duration=0.2):
         # Possible actions that can be taken
         actions = [self.drive_forwards, self.drive_left, self.drive_right]
         # Pick an action to do
-        nextAction = randint(0,len(actions))
+        nextAction = randint(0,len(actions) - 1)
         # Execute the chosen action
         actions[nextAction]()
         # Wait before stopping 
-        time.sleep(0.2)
+        time.sleep(duration)
         self.stop()
 
     def __updateDriving(self, speeds):
@@ -81,7 +81,8 @@ class NavigationSystem:
         c       = 6 *  math.pi  # Circumference of the wheels in cm
         track   = 10.4          # Tire-to-Tire width in cm
         RPS     = 2.208         # Tire revolutions per second (approximate)
-        timeToSleep = (track * math.sin(theta) ) / ( RPS * c ) * 2 # 2 is a fudge-factor
+        timeToSleep = (track * math.sin(theta) ) / ( RPS * c )
+        timeToSleep *= 2 # 2 is a fudge-factor
         print("TTS: {}".format(timeToSleep))
         if turnLeft == False:
             # Turning right, so use the left motor only, going forwards
@@ -91,17 +92,29 @@ class NavigationSystem:
         time.sleep(timeToSleep)
         self.stop()
 
-    def drive_forwards(self):
+    def drive_forwards(self, duration=None):
         self.__updateDriving([0, self.speed, 0, self.speed])
+        if duration:
+            time.sleep(duration)
+            self.stop()
     
-    def drive_backwards(self):
+    def drive_backwards(self, duration=None):
         self.__updateDriving([self.speed, 0, self.speed, 0])
+        if duration:
+            time.sleep(duration)
+            self.stop()
     
-    def drive_left(self):
+    def drive_left(self, duration=None):
         self.__updateDriving([0, self.speed, self.speed, 0])
+        if duration:
+            time.sleep(duration)
+            self.stop()
     
-    def drive_right(self):
+    def drive_right(self, duration=None):
         self.__updateDriving([self.speed, 0, 0, self.speed])
+        if duration:
+            time.sleep(duration)
+            self.stop()
     
     def stop(self):
         self.__updateDriving([0,0,0,0])
