@@ -4,26 +4,21 @@ import socket
 import struct
 import time
 import picamera
+import networkSend
 
 '''
 This module creates a network stream over which captured images will be sent.
 '''
 class CameraStream:
-    def __init__(self):
-        self.initialized = False
-        self.socket = socket.socket()
-        self.connecton = None
-        self.stopSending = None
+    def __init__(self, host, port):
+        try:
+            self.imageSender = networkSend.FileSender(host, port)
+            print("Connection to server established")
+        except:
+            print("CameraStream: Couldn't establish connection to the server. Is the server process running already? Exiting now.")
+            quit()
 
-    def initialize(self, host, port):
-        self.socket.connect((host, port))
-        self.connection = self.socket.makefile('wb')
-        self.initialized = True
-
-    def start_sending(self, delayPerImageInMilliseconds):
-        if (self.initialized == False):
-            print("Camera Stream was not initialized before startSending was called!")
-            return
+    def start_sending(self, FPS):#, delayPerImageInMilliseconds):
         try:
             camera = picamera.PiCamera()
             camera.resolution = (640, 480)
@@ -32,44 +27,15 @@ class CameraStream:
             print("Camera warming up...")
             time.sleep(2)
             print("Camera ready")
-
-            # Construct a stream to hold image data
-            # temporarily (we could write it directly to connection but in this
-            # case we want to find out the size of each capture first to keep
-            # our protocol simple)
-            stream = io.BytesIO()
-            for image in camera.capture_continuous(stream, 'jpeg'):
-                # Write the length of the capture to the stream and flush to
-                # ensure it actually gets sent
-                self.connection.write(struct.pack('<L', stream.tell()))
-                self.connection.flush()
-                # Rewind the stream and send the image data over the wire
-                stream.seek(0)
-
-                print("Sending image")
-                self.connection.write(stream.read())
-                
-                if (self.stopSending):
-                    break;
-
-                time.sleep(delayPerImageInMilliseconds / 1000)
-
-                # Reset the stream for the next capture
-                stream.seek(0)
-                stream.truncate()
-            # Write a length of zero to the stream to signal we're done
-            print("Sending quit signal")
-            self.connection.write(struct.pack('<L', 0))
-        finally:
-            print("Cleaning up")
-            self.cleanup()
-    def cleanup(self):
-        self.stopSending = True
-        self.connection.close()
-        self.socket.close()
+            while True: 
+                # We're going to capture 5 frames rapidly, these are their names
+                imageFileNames = ["image{}.jpg".format(x) for x in range(5)]
+                camera.capture_sequence(imageFileNames, format='jpeg', use_video_port=True)
+                for name in imageFileNames:
+#                    print("Sending image")
+                    self.imageSender.sendFile(name)
+                time.sleep(1 / FPS)#delayPerImageInMilliseconds / 1000)
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt detected. Terminating connection to server")
+            self.imageSender.cleanup()
 # end CameraStream
-
-if __name__ == "__main__":
-    cStr = CameraStream()
-    cStr.initialize("192.168.0.13", 8000)
-    cStr.start_sending(1000)

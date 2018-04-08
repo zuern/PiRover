@@ -1,6 +1,7 @@
 #!/bin/python
 
 import time
+import math
 from random import randint
 try:
     import RPi.GPIO as gpio
@@ -69,6 +70,28 @@ class NavigationSystem:
         for i in range(4):
             self.pwms[i].ChangeDutyCycle(speeds[i])
     
+    # Turn the robot an angle of theta radians from it's front facing position.
+    # Positive theta values will turn right, negative left
+    # Theta should be < 90 degrees
+    # This will only be approximate since we're using DC motors and not stepper motors to control the rover
+    def turn(self, theta):
+        self.stop()
+        time.sleep(0.1) # Give motors a sec to wind down
+        # We need to calculate how long the motor should run to make it travel the correct distance to turn the rover
+        # The following values were measured, and are approximate
+        c       = 6 *  math.pi  # Circumference of the wheels in cm
+        track   = 10.4          # Tire-to-Tire width in cm
+        RPS     = 2.208         # Tire revolutions per second (approximate)
+        timeToSleep = (c * track * math.sin(theta) ) / RPS
+        print("TTS: {}".format(timeToSleep))
+        if theta > 0:
+            # Turning right, so use the left motor only, going forwards
+            self.__updateDriving([0, 0, 0, self.speed])
+        else:
+            self.__updateDriving([0, self.speed, 0, 0])
+        time.sleep(timeToSleep)
+        self.stop()
+
     def drive_forwards(self):
         self.__updateDriving([0, self.speed, 0, self.speed])
     
