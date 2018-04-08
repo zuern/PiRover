@@ -6,6 +6,8 @@
 
 import getch
 import sys
+import math
+import time
 sys.path.append('..') # include parent folder scripts in path
 import navigationSystem
 nav = navigationSystem.NavigationSystem()
@@ -18,18 +20,23 @@ def keyboardControl():
             if key == 27: #ESC
                 break
             elif key == 119: # w
-                nav.driveForwards()
+                nav.drive_forwards()
             elif key == 97: # a
-                nav.driveLeft()
+                nav.drive_left()
             elif key == 115: # s
-                nav.driveBackwards()
+                nav.drive_backwards()
             else:
-                nav.driveRight()
+                nav.drive_right()
 
     except KeyboardInterrupt:
         nav.cleanup()
 # end keyboardControls
 
 if __name__ == "__main__":
-    # turn 45 degrees
-    nav.turn(0.25 * math.pi)
+    nav.drive_forwards()
+    time.sleep(0.5)
+    print("stopping")
+    nav.stop()
+    time.sleep(2)
+    nav.cleanup()
+#    keyboardControl()
