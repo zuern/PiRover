@@ -23,7 +23,7 @@ The `PiRover` software consists of three modules and main.py:
 
 Currently `server.py` and `networkSend.py` need to be linked into the `darkflow` directory and run from there in order for yolo to work
 
-`main` is the starting point of the server-side code. The code operates by listening for an incoming image from the PiRover. When it recieves the image it saves it to disk, to a folder the CNN is watching.
+`server` is the starting point of the server-side code. The code operates by listening for an incoming image from the PiRover. When it recieves the image it saves it to disk, to a folder the CNN is watching.
 
 The CNN will see a new file and process the file, outputting a JSON file containing an array of all the bounding boxes for detected objects. The bounding box data looks like:
 
