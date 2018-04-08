@@ -1,4 +1,6 @@
 # PiRover
+![PiRover Image](https://github.com/zuern/PiRover/raw/master/Images/PiRover%2001.jpg)
+
 PiRover is a small robot built using electronic components from QKits Kingston. It's purpose is to randomly move through its environment until it identifies a target object, then drive towards the target object. The robot uses object detection via a convolutional neural network to identify the target in the environment (a toy car) and drive towards it. The robot consists of:
 - A Raspberry Pi Model B
 - A robot chassis kit (Metal Frame + 2 DC Motors)
@@ -7,7 +9,7 @@ PiRover is a small robot built using electronic components from QKits Kingston. 
 - USB Wireless Adapter
 - DC Motor Control Board (2 H-Bridge Circuits)
 
-PiRover employs three software components, implemented in Python2, Python3: `PiRover`, the clientside software; `PiServer`, the serverside control software; either of two types of neural network that can be optionally employed by `PiServer` - `tiny-yolo` (implemented in the darkflow framework) and `SENURA'S CNN` (implemented in the tensorflow framework)
+PiRover employs three software components, implemented in Python2, Python3: `PiRover`, the clientside software; `PiServer`, the serverside control software; either of two types of neural network that can be optionally employed by `PiServer` - `tiny-yolo` (implemented in the darkflow framework) and `SENURA'S CNN` (implemented in the tensorflow framework).
 
 ## `PiRover`
 The `PiRover` software consists of three modules and main.py:
@@ -26,7 +28,7 @@ Currently `server.py` and `networkSend.py` need to be linked into the `darkflow`
 The CNN will see a new file and process the file, outputting a JSON file containing an array of all the bounding boxes for detected objects. The bounding box data looks like:
 
 ```
-TODO
+[{ "label": "car", "confidence": 0.87, "topleft": { "x": 145, "y": 256 }, "bottomright": { "x": 200, "y": 300 } }]
 ```
 
 ## `SENURA-CNN`
