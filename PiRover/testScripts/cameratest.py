@@ -1,6 +1,10 @@
 import picamera
 import time
 
+'''
+Display video recording from PiCamera to the HDMI out on the raspberry pi
+'''
+
 camera = picamera.PiCamera()
 
 camera.start_recording('video.h264')
