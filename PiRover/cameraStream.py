@@ -12,30 +12,38 @@ This module creates a network stream over which captured images will be sent.
 class CameraStream:
     def __init__(self, host, port):
         try:
-            self.imageSender = networkSend.FileSender(host, port)
-            print("Connection to server established")
-        except:
-            print("CameraStream: Couldn't establish connection to the server. Is the server process running already? Exiting now.")
-            quit()
-
-    def start_sending(self, FPS):#, delayPerImageInMilliseconds):
-        try:
-            camera = picamera.PiCamera()
-            camera.resolution = (640, 480)
+            self.w = 640
+            self.h = 480
+            self.camera = picamera.PiCamera()
+            self.camera.resolution = (self.w, self.h)
             # Start a preview and let the camera warm up for 2 seconds
-            camera.start_preview()
+            self.camera.start_preview()
             print("Camera warming up...")
             time.sleep(2)
             print("Camera ready")
-            while True: 
-                # We're going to capture 5 frames rapidly, these are their names
-                imageFileNames = ["image{}.jpg".format(x) for x in range(5)]
-                camera.capture_sequence(imageFileNames, format='jpeg', use_video_port=True)
-                for name in imageFileNames:
-#                    print("Sending image")
-                    self.imageSender.sendFile(name)
-                time.sleep(1 / FPS)#delayPerImageInMilliseconds / 1000)
-        except KeyboardInterrupt:
-            print("KeyboardInterrupt detected. Terminating connection to server")
-            self.imageSender.cleanup()
+            
+            
+            self.imageSender = networkSend.FileSender(host, port)
+            print("Connection to server established")
+        except Exception as e:
+            print(e)
+            print("CameraStream: Couldn't establish connection to the server. Is the server process running already? Exiting now.")
+            quit()
+
+    def sendImage(self):
+        try:
+            #print("Capturing")
+            self.camera.capture('img.jpg', format='jpeg')    
+            #print("Sending image")
+            self.imageSender.sendFile('img.jpg')
+            print("Image sent")
+        except Exception as e:
+            print("CameraStream sending failed")
+            print(e)
+            self.cleanup()
+            quit()
+
+    def cleanup(self):
+        self.imageSender.cleanup()
+
 # end CameraStream
