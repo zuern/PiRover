@@ -1,5 +1,4 @@
 # CISC 452/COGS 400 PiRover Project
-# Kevin Zuern (10134425)
 #
 # When run this script will enable keyboard control of the Pi Robot via WASD keys
 # This script is primarily to test the motors, however logic from this script
